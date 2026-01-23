@@ -21,14 +21,7 @@ export default function FoundersPage() {
           >
             FOUNDERS
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed"
-          >
-            Meet the visionary leaders who bring legendary entertainment to life
-          </motion.p>
+
         </div>
       </section>
 
