@@ -56,7 +56,7 @@ export default function FoundersPage() {
                   Shuki Levy is a visionary producer, composer, and songwriter whose work has defined a generation of entertainment. With an unparalleled ability to craft memorable themes and scores, Shuki has brought to life some of the most iconic and beloved shows in television history.
                 </p>
                 <p>
-                  As the co-creator of the 8 billion-dollar Mighty Morphin Power Rangers franchise and composer of heroic anthems like He-Man, X-Men, Rainbow Brite, and Inspector Gadget, Shuki's creativity has been the heartbeat of countless childhoods, transcending cultural boundaries and captivating audiences worldwide.
+                  As the co-creator of the multi-billion dollar Mighty Morphin Power Rangers franchise and composer of heroic anthems like He-Man, X-Men, Rainbow Brite, and Inspector Gadget, Shuki's creativity has been the heartbeat of countless childhoods, transcending cultural boundaries and captivating audiences worldwide.
                 </p>
               </div>
             </motion.div>
