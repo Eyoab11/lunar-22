@@ -11,7 +11,7 @@ export default function FoundersPage() {
       <Header />
       <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6">
+      <section className="relative pt-32 pb-8 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -26,7 +26,7 @@ export default function FoundersPage() {
       </section>
 
       {/* Founders Section */}
-      <section className="py-20 px-6">
+      <section className="py-8 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             
