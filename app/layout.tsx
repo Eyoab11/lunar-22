@@ -16,7 +16,11 @@ export const metadata: Metadata = {
   title: "Lunar 22",
   description: "Where legendary world-builders unite to redefine animation for the next century",
   icons: {
-    icon: '/L22 W.png',
+    icon: [
+      { url: '/L22 W.png', sizes: '32x32', type: 'image/png' },
+      { url: '/L22 W.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: '/L22 W.png',
   },
 };
 
