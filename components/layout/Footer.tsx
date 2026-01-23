@@ -12,9 +12,9 @@ export const Footer = () => {
   ];
 
   const socialLinks = [
-    { name: 'Facebook', href: '#' },
-    { name: 'X', href: '#' },
-    { name: 'LinkedIn', href: '#' },
+    { name: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61586971383514' },
+    { name: 'X', href: 'https://x.com/_lunar22_' },
+    { name: 'LinkedIn', href: 'https://www.linkedin.com/company/111558007/' },
   ];
 
   return (
