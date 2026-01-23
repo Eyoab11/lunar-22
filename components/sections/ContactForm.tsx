@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Mail, Phone } from 'lucide-react';
 
 export const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -67,19 +66,6 @@ export const ContactForm = () => {
           <p className="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
             Connect with our team by filling out the form below.
           </p>
-        </motion.div>
-
-        {/* Contact Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12"
-        >
-          <div className="flex items-center gap-3 text-gray-300">
-            <Mail className="w-5 h-5" />
-            <span>info@lunar22.com</span>
-          </div>
         </motion.div>
 
         {/* Contact Form */}
