@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev', // Using Resend's default sender
-      to: ['contact@lunar22.com'], // Hardcoded recipient
+      from: 'Contact Form <contact@lunar22.com>', // Hardcoded sender
+      to: [process.env.To || 'info@lunar22.com'], // Hardcoded recipient
       subject: `Contact Form: ${formData.subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
