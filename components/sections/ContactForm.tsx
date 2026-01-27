@@ -2,14 +2,17 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import type { ContactFormData, ContactFormStatus, ContactApiResponse } from '../../types/contact';
 
 export const ContactForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
     subject: '',
     message: ''
   });
+  
+  const [status, setStatus] = useState<ContactFormStatus>({ type: 'idle' });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -19,9 +22,45 @@ export const ContactForm = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setStatus({ type: 'loading' });
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result: ContactApiResponse = await response.json();
+
+      if (response.ok) {
+        setStatus({ 
+          type: 'success', 
+          message: 'Thank you! Your message has been sent successfully.' 
+        });
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        setStatus({ 
+          type: 'error', 
+          message: result.error || 'Failed to send message. Please try again.' 
+        });
+      }
+    } catch (error) {
+      setStatus({ 
+        type: 'error', 
+        message: 'Network error. Please check your connection and try again.' 
+      });
+    }
   };
 
   return (
@@ -76,6 +115,30 @@ export const ContactForm = () => {
           className="max-w-2xl mx-auto"
         >
           <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
+            {/* Status Messages */}
+            {status.type !== 'idle' && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`mb-6 p-4 rounded-lg border ${
+                  status.type === 'success' 
+                    ? 'bg-green-500/10 border-green-500/20 text-green-400' 
+                    : status.type === 'error'
+                    ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                    : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                }`}
+              >
+                {status.type === 'loading' ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Sending your message...</span>
+                  </div>
+                ) : (
+                  <span>{status.message}</span>
+                )}
+              </motion.div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-white text-sm font-medium mb-2">
@@ -90,6 +153,7 @@ export const ContactForm = () => {
                   placeholder="Jane Smith"
                   className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
                   required
+                  disabled={status.type === 'loading'}
                 />
               </div>
 
@@ -106,6 +170,7 @@ export const ContactForm = () => {
                   placeholder="info@example.com"
                   className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
                   required
+                  disabled={status.type === 'loading'}
                 />
               </div>
 
@@ -122,6 +187,7 @@ export const ContactForm = () => {
                   placeholder="Collaboration request"
                   className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
                   required
+                  disabled={status.type === 'loading'}
                 />
               </div>
 
@@ -138,16 +204,29 @@ export const ContactForm = () => {
                   rows={6}
                   className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300 resize-none"
                   required
+                  disabled={status.type === 'loading'}
                 />
               </div>
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-white/90 backdrop-blur-sm text-black font-medium py-4 rounded-full hover:bg-white transition-all duration-300 border border-white/20"
+                whileHover={{ scale: status.type === 'loading' ? 1 : 1.02 }}
+                whileTap={{ scale: status.type === 'loading' ? 1 : 0.98 }}
+                disabled={status.type === 'loading'}
+                className={`w-full font-medium py-4 rounded-full transition-all duration-300 border border-white/20 ${
+                  status.type === 'loading'
+                    ? 'bg-white/50 text-gray-500 cursor-not-allowed'
+                    : 'bg-white/90 backdrop-blur-sm text-black hover:bg-white'
+                }`}
               >
-                Send message
+                {status.type === 'loading' ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Sending...</span>
+                  </div>
+                ) : (
+                  'Send message'
+                )}
               </motion.button>
             </form>
           </div>
