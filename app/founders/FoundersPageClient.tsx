@@ -82,7 +82,7 @@ export function FoundersPageClient() {
                   Ahmad Al Dalgan is a successful Saudi Businessman with corporations in all major cities in the Kingdom. Ahmad has a diverse portfolio of companies ranging from Finance to Automotive.
                 </p>
                 <p>
-                  Ahmad is currently Director of Enterprise Risk Management at American Express Saudi, bringing his extensive business acumen and strategic vision to the entertainment industry through his partnership with Levy Entertainment Media.
+                  Ahmad is currently Director of Enterprise Risk Management at American Express Saudi, bringing his extensive business acumen and strategic vision to the entertainment industry.
                 </p>
               </div>
             </motion.div>
