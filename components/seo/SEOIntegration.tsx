@@ -142,7 +142,7 @@ export function AboutSEO({ children }: { children: React.ReactNode }) {
 export function FoundersSEO({ children }: { children: React.ReactNode }) {
   const foundersContent = {
     title: 'Founders | Lunar 22',
-    description: 'Meet the founders of Lunar 22 Media and learn about their vision for the future of animation and entertainment.',
+    description: 'Meet the founders of Lunar 22 and learn about their vision for the future of animation and entertainment.',
     datePublished: '2024-01-01T00:00:00.000Z',
     dateModified: new Date().toISOString(),
   };

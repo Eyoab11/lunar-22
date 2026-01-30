@@ -170,10 +170,10 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
   '/founders': {
     metadata: {
       title: 'FOUNDERS | Lunar 22',
-      description: 'Meet the founders of Lunar 22 Media. Learn about the visionaries behind our creative content production and entertainment company.',
+      description: 'Meet the founders of Lunar 22. Learn about the visionaries behind our creative content production and entertainment company.',
       openGraph: {
         title: 'FOUNDERS | Lunar 22',
-        description: 'Meet the founders of Lunar 22 Media. Learn about the visionaries behind our creative content production and entertainment company.',
+        description: 'Meet the founders of Lunar 22. Learn about the visionaries behind our creative content production and entertainment company.',
         image: '/lem.avif',
         type: 'website',
         siteName: 'Lunar 22',
@@ -181,7 +181,7 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
       twitter: {
         card: 'summary_large_image',
         title: 'FOUNDERS | Lunar 22',
-        description: 'Meet the founders of Lunar 22 Media. Learn about the visionaries behind our creative content production and entertainment company.',
+        description: 'Meet the founders of Lunar 22. Learn about the visionaries behind our creative content production and entertainment company.',
         image: '/lem.avif',
         site: '@lunar22media',
       },
