@@ -7,15 +7,23 @@ import { Button } from '../ui/Button';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMediaDropdownOpen, setIsMediaDropdownOpen] = useState(false);
 
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/#about-us' },
     { name: 'Projects', href: '/#past-work' },
-    { name: 'Founders', href: '/founders' },
-    { name: 'Media', href: '/media' },
-    { name: 'Contact', href: '/contact' }
+    { name: 'Founders', href: '/founders' }
   ];
+
+  const mediaItems = [
+    { name: 'Brochure', href: '/media/brochure' },
+    { name: 'Presentations', href: '/media/presentations' }
+  ];
+
+  const handleMediaClick = () => {
+    setIsMediaDropdownOpen(!isMediaDropdownOpen);
+  };
 
   return (
     <motion.header
@@ -40,6 +48,7 @@ export const Header = () => {
               <Link
                 href={item.href}
                 className="relative text-gray-300 hover:text-blue-400 transition-colors duration-300 group"
+                onClick={() => setIsMediaDropdownOpen(false)}
               >
                 <motion.span
                   className="inline-block"
@@ -59,6 +68,86 @@ export const Header = () => {
               </Link>
             </motion.div>
           ))}
+          
+          {/* Media Dropdown */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: navItems.length * 0.1 }}
+            className="relative"
+          >
+            <button 
+              onClick={handleMediaClick}
+              className="relative text-gray-300 hover:text-blue-400 transition-colors duration-300 group"
+            >
+              <motion.span
+                className="inline-block"
+                whileHover={{ 
+                  y: [0, -4, 0],
+                  transition: { 
+                    duration: 0.4, 
+                    ease: "easeInOut",
+                    times: [0, 0.5, 1]
+                  }
+                }}
+              >
+                Media
+              </motion.span>
+              {/* Underline that slides in from left - blue gradient */}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-400 group-hover:w-full transition-all duration-300" />
+            </button>
+            
+            {/* Dropdown Menu - Stays open when clicked */}
+            {isMediaDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute top-full left-0 mt-2 w-48 bg-black/95 backdrop-blur-lg border border-gray-800 rounded-lg shadow-xl"
+              >
+                {mediaItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="block px-4 py-3 text-gray-300 hover:text-blue-400 hover:bg-gray-800/50 transition-colors duration-300 first:rounded-t-lg last:rounded-b-lg"
+                    onClick={() => setIsMediaDropdownOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Contact Link */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: (navItems.length + 1) * 0.1 }}
+          >
+            <Link
+              href="/contact"
+              className="relative text-gray-300 hover:text-blue-400 transition-colors duration-300 group"
+              onClick={() => setIsMediaDropdownOpen(false)}
+            >
+              <motion.span
+                className="inline-block"
+                whileHover={{ 
+                  y: [0, -4, 0],
+                  transition: { 
+                    duration: 0.4, 
+                    ease: "easeInOut",
+                    times: [0, 0.5, 1]
+                  }
+                }}
+              >
+                Contact
+              </motion.span>
+              {/* Underline that slides in from left - blue gradient */}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-400 group-hover:w-full transition-all duration-300" />
+            </Link>
+          </motion.div>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -107,10 +196,37 @@ export const Header = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Mobile Media Submenu */}
+            <div className="py-3 border-b border-gray-800/50">
+              <span className="text-gray-300 font-medium">Media</span>
+              <div className="ml-4 mt-2 space-y-2">
+                {mediaItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block text-gray-400 hover:text-blue-400 py-1 transition-colors duration-300"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            
+            {/* Mobile Contact Link */}
+            <Link
+              href="/contact"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-gray-300 hover:text-blue-400 py-3 border-b border-gray-800/50 transition-colors duration-300"
+            >
+              Contact
+            </Link>
+            
             <div className="mt-4">
               <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="outline" size="sm" className="w-full">
-                  Contact
+                  Get In Touch
                 </Button>
               </Link>
             </div>
