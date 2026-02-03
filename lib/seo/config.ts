@@ -199,6 +199,38 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
       priority: 0.7,
     },
   },
+  '/media': {
+    metadata: {
+      title: 'MEDIA | Lunar 22',
+      description: 'Explore our corporate materials, presentations, and video content showcasing our work and vision. Download brochures and watch our latest videos.',
+      openGraph: {
+        title: 'MEDIA | Lunar 22',
+        description: 'Explore our corporate materials, presentations, and video content showcasing our work and vision. Download brochures and watch our latest videos.',
+        image: '/lem.avif',
+        type: 'website',
+        siteName: 'Lunar 22',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'MEDIA | Lunar 22',
+        description: 'Explore our corporate materials, presentations, and video content showcasing our work and vision. Download brochures and watch our latest videos.',
+        image: '/lem.avif',
+        site: '@lunar22media',
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+    },
+    schema: {
+      type: 'webpage',
+      data: {},
+    },
+    sitemap: {
+      changefreq: 'monthly',
+      priority: 0.8,
+    },
+  },
 };
 
 /**

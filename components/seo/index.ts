@@ -53,4 +53,5 @@ export {
   AboutSEO,
   FoundersSEO,
   PowerRangersSEO,
+  MediaSEO,
 } from './SEOIntegration';

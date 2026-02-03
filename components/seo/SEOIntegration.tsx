@@ -182,3 +182,25 @@ export function PowerRangersSEO({ children }: { children: React.ReactNode }) {
     </SEOIntegration>
   );
 }
+
+export function MediaSEO({ children }: { children: React.ReactNode }) {
+  const mediaContent = {
+    title: 'Media | Lunar 22',
+    description: 'Explore our corporate materials, presentations, and video content showcasing our work and vision. Download brochures and watch our latest videos.',
+    datePublished: '2024-01-01T00:00:00.000Z',
+    dateModified: new Date().toISOString(),
+  };
+
+  return (
+    <SEOIntegration
+      page="/media"
+      structuredDataType="creativework"
+      customSchema={mediaContent}
+      enableAnalytics={true}
+      enableStructuredData={true}
+      enablePerformanceOptimization={true}
+    >
+      {children}
+    </SEOIntegration>
+  );
+}
