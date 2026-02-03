@@ -88,7 +88,7 @@ export const AboutUs = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
             viewport={{ once: true }}
           >
-            A visionary global studio led by the creator behind one of the most successful children's franchises in history, powered by a seasoned team with a proven record of building hit entertainment brands. Lunar 22 develops original IP engineered to resonate across cultures, platforms, and generations, turning every story into a scalable world. With a franchise‑ready content ecosystem built for consumer products and long‑term brand growth, Lunar 22 is defining the current and next wave of global entertainment—where the future of storytelling knows no limits.
+            A visionary global studio led by the creator behind one of the most successful children's franchises in history, powered by a seasoned team with a proven record of building hit entertainment brands. Lunar 22 develops original IP engineered to resonate across cultures, platforms, and generations, turning every story into a scalable world. With a franchise‑ready content ecosystem built for consumer products and long‑term brand growth, Lunar 22 is defining the current and next wave of global family entertainment—where the future of storytelling knows no limits.
           </motion.p>
         </motion.div>
 

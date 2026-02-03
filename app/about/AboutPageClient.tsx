@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '../../components/ui/Button';
 
 export function AboutPageClient() {
@@ -22,12 +21,13 @@ export function AboutPageClient() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-5 gap-12 items-center">
             {/* Left - Text */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, delay: 0.2 }}
+              className="md:col-span-3"
             >
               <div className="w-12 h-0.5 bg-gradient-to-r from-blue-400 to-white mb-8" />
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tight leading-tight">
@@ -43,19 +43,24 @@ export function AboutPageClient() {
               </p>
             </motion.div>
 
-            {/* Right - Image */}
+            {/* Right - Video */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, delay: 0.4 }}
-              className="relative h-[500px] rounded-2xl overflow-hidden bg-black"
+              className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-black md:col-span-2"
             >
-              <Image
-                src="/camera.png"
-                alt="Lunar 22"
-                fill
-                className="object-contain"
-              />
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+                preload="auto"
+              >
+                <source src="/Lunar 22 Video 1.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
             </motion.div>
           </div>
         </div>

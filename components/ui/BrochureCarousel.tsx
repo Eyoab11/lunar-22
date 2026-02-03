@@ -95,21 +95,6 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
           />
         ))}
       </div>
-
-      {/* Download button */}
-      <div className="flex justify-center mt-4 md:mt-6 px-4">
-        <a
-          href="/Lunar 22_Digital Brochure_Feb 02.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center px-4 py-2 md:px-6 md:py-3 bg-white text-black rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 font-medium text-sm md:text-base"
-        >
-          <svg className="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Download Full PDF
-        </a>
-      </div>
     </div>
   );
 };

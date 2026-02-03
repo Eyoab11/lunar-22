@@ -15,83 +15,97 @@ interface WorkItem {
 const workItems: WorkItem[] = [
   {
     id: 1,
+    title: "Wiggly & Jiggly",
+    youtubeId: "",
+    services: "",
+    customThumbnail: "/Fetch_in_Park_Enhanced.png"
+  },
+  {
+    id: 2,
+    title: "Little Omar's Big Adventures",
+    youtubeId: "",
+    services: "",
+    customThumbnail: "/omar.jpeg"
+  },
+  {
+    id: 3,
     title: "He-Man & The Masters Of The Universe",
     youtubeId: "7yeA7a0uS3A",
     services: "",
     customThumbnail: "/heman.jpg"
   },
   {
-    id: 2,
+    id: 4,
     title: "Inspector Gadget",
     youtubeId: "rIc13VjeAw8",
     services: "",
     customThumbnail: "/inspectorgadget.jpg"
   },
   {
-    id: 3,
+    id: 5,
     title: "X-Men",
     youtubeId: "sAkL2-vh2Sk",
     services: "",
     customThumbnail: "/xmen.jpg"
   },
   {
-    id: 4,
+    id: 6,
     title: "Rainbow Brite",
     youtubeId: "uQSTSxqIyCg",
     services: "",
     customThumbnail: "/rainbowbrite.png"
   },
   {
-    id: 5,
+    id: 7,
     title: "Mighty Morphin Power Rangers",
     youtubeId: "nHalaFUqnTI",
     services: "",
     customThumbnail: "/powerrangers.jpg"
   },
   {
-    id: 6,
+    id: 8,
     title: "Spider-Man",
     youtubeId: "DZGN9fZvQhc",
     services: "",
     customThumbnail: "/spiderman.jpg"
   },
   {
-    id: 7,
+    id: 9,
     title: "Digimon",
     youtubeId: "MJvpOrzcGbI",
     services: "",
     customThumbnail: "/digimon.jpg"
   },
   {
-    id: 8,
+    id: 10,
     title: "Heathcliff",
     youtubeId: "9LLb8EBU9nQ",
     services: "",
     customThumbnail: "/heatcliff.jpg"
   },
   {
-    id: 9,
+    id: 11,
     title: "Mysterious Cities of Gold",
     youtubeId: "_ycG-xe1uSM",
     services: "",
     customThumbnail: "/MYSTERIOUSCITIESOFGOLD.jpg"
   },
   {
-    id: 10,
+    id: 12,
     title: "M.A.S.K.",
     youtubeId: "o2Z1yLO9C-Q",
     services: "",
     customThumbnail: "/mask.jpg"
   },
   {
-    id: 11,
+    id: 13,
     title: "She-Ra",
     youtubeId: "wR65P73X5GI",
     services: "",
     customThumbnail: "/she-ra.jpg"
   },
   {
-    id: 12,
+    id: 14,
     title: "Ulysses 31",
     youtubeId: "OZ4c1X5ene8",
     services: "",
@@ -104,7 +118,9 @@ export const WorkGrid = () => {
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
   const handleCardClick = (youtubeId: string) => {
-    setPlayingVideo(youtubeId);
+    if (youtubeId) {
+      setPlayingVideo(youtubeId);
+    }
   };
 
   const closeVideo = () => {
@@ -171,25 +187,27 @@ export const WorkGrid = () => {
                         ? 'opacity-100' 
                         : 'opacity-0 group-hover:opacity-100'
                     }`}>
-                      {/* Play Button */}
-                      <div className={`transition-transform duration-300 mb-3 ${
-                        activeCard === item.id 
-                          ? 'scale-100' 
-                          : 'scale-0 group-hover:scale-100'
-                      }`}>
-                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-200">
-                          <Play className="w-6 h-6 text-black ml-1" fill="black" />
+                      {/* Play Button - Only show for items with YouTube links */}
+                      {item.youtubeId && (
+                        <div className={`transition-transform duration-300 mb-3 ${
+                          activeCard === item.id 
+                            ? 'scale-100' 
+                            : 'scale-0 group-hover:scale-100'
+                        }`}>
+                          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-200">
+                            <Play className="w-6 h-6 text-black ml-1" fill="black" />
+                          </div>
                         </div>
-                      </div>
+                      )}
                       
-                      {/* Play on YouTube Text */}
+                      {/* Text - Different for items with/without YouTube links */}
                       <div className={`transition-all duration-300 ${
                         activeCard === item.id 
                           ? 'translate-y-0 opacity-100' 
                           : 'translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
                       }`}>
                         <p className="text-white text-sm font-medium tracking-wide">
-                          Watch Video
+                          {item.youtubeId ? 'Watch Video' : 'Coming Soon'}
                         </p>
                       </div>
                     </div>

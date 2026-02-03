@@ -62,7 +62,7 @@ export const HeroSection = () => {
           transition={{ duration: 0.8, delay: 1 }}
           className="text-gray-400 text-base md:text-lg max-w-3xl mx-auto leading-relaxed"
         >
-          Lunar 22 develops original entertainment properties that are built to work across cultures, platforms, and generations. Its content ecosystem is structured so each idea can grow into franchises, consumer products, and long-term brands, positioning Lunar 22 as a creator of globally scalable, future‑focused entertainment.
+          Lunar 22 develops original family entertainment that are built to work across cultures, platforms, and generations. Its content ecosystem is structured so each idea can grow into franchises, consumer products, and long-term brands, positioning Lunar 22 as a creator of globally scalable, future‑focused entertainment.
         </motion.p>
       </div>
 
