@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import { ScrollTransition } from './ScrollTransition';
 
 export const PastWork = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,7 +55,7 @@ export const PastWork = () => {
     <section 
       id="past-work"
       ref={containerRef}
-      className="h-[180vh] bg-black flex items-start justify-center pt-20"
+      className="h-[180vh] bg-black flex items-start justify-center pt-20 relative"
     >
       <div className="sticky top-1/2 transform -translate-y-1/2 max-w-7xl mx-auto px-8">
         <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -93,6 +94,9 @@ export const PastWork = () => {
           </div>
         </div>
       </div>
+      
+      {/* Scroll Transition Animation */}
+      <ScrollTransition />
     </section>
   );
 };
