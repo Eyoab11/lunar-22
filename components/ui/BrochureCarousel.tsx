@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 
 interface BrochureCarouselProps {
   pages: string[];
@@ -10,6 +9,7 @@ interface BrochureCarouselProps {
 
 export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
   const [currentPage, setCurrentPage] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({});
   const [imageError, setImageError] = useState<{ [key: number]: boolean }>({});
   const [isSafari, setIsSafari] = useState(false);
 
@@ -19,6 +19,54 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
     const isSafariBrowser = /safari/.test(userAgent) && !/chrome/.test(userAgent) && !/chromium/.test(userAgent);
     setIsSafari(isSafariBrowser);
   }, []);
+
+  // Preload images aggressively
+  useEffect(() => {
+    const preloadImages = async () => {
+      // Preload current and next 2 images immediately
+      const imagesToPreload = [
+        currentPage,
+        (currentPage + 1) % pages.length,
+        (currentPage + 2) % pages.length
+      ];
+
+      imagesToPreload.forEach((index) => {
+        if (!loadedImages[index] && !imageError[index]) {
+          const img = new Image();
+          img.onload = () => {
+            setLoadedImages(prev => ({ ...prev, [index]: true }));
+          };
+          img.onerror = (error) => {
+            console.error(`Failed to load image ${index}: ${pages[index]}`, error);
+            setImageError(prev => ({ ...prev, [index]: true }));
+          };
+          img.src = pages[index];
+        }
+      });
+    };
+
+    preloadImages();
+  }, [currentPage, pages, loadedImages, imageError]);
+
+  // Preload all images on component mount (background loading)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      pages.forEach((src, index) => {
+        if (!loadedImages[index] && !imageError[index]) {
+          const img = new Image();
+          img.onload = () => {
+            setLoadedImages(prev => ({ ...prev, [index]: true }));
+          };
+          img.onerror = () => {
+            setImageError(prev => ({ ...prev, [index]: true }));
+          };
+          img.src = src;
+        }
+      });
+    }, 500); // Start background loading after 500ms
+
+    return () => clearTimeout(timer);
+  }, [pages, loadedImages, imageError]);
 
   const nextPage = () => {
     setCurrentPage((prev) => (prev + 1) % pages.length);
@@ -32,45 +80,19 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
     setCurrentPage(pageIndex);
   };
 
+  const handleImageLoad = (index: number) => {
+    setLoadedImages(prev => ({ ...prev, [index]: true }));
+  };
+
   const handleImageError = (index: number) => {
+    console.error(`Failed to load image: ${pages[index]}`);
     setImageError(prev => ({ ...prev, [index]: true }));
   };
 
-  // Safari-specific image component
-  const SafariImage = ({ src, alt, index }: { src: string; alt: string; index: number }) => (
-    <img
-      src={src}
-      alt={alt}
-      style={{
-        width: '100%',
-        height: '100%',
-        objectFit: 'contain',
-        objectPosition: 'center',
-        display: 'block',
-      }}
-      onError={() => handleImageError(index)}
-      loading={index === 0 ? 'eager' : 'lazy'}
-    />
-  );
-
-  // Standard Next.js Image component
-  const StandardImage = ({ src, alt, index }: { src: string; alt: string; index: number }) => (
-    <Image
-      src={src}
-      alt={alt}
-      fill
-      className="object-contain"
-      priority={index === 0}
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-      quality={90}
-      onError={() => handleImageError(index)}
-      style={{
-        objectFit: 'contain',
-        objectPosition: 'center',
-      }}
-      unoptimized={isSafari}
-    />
-  );
+  const retryImage = (index: number) => {
+    setImageError(prev => ({ ...prev, [index]: false }));
+    setLoadedImages(prev => ({ ...prev, [index]: false }));
+  };
 
   return (
     <div className="w-full max-w-full overflow-hidden">
@@ -85,39 +107,42 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -300 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="absolute inset-0 overflow-hidden flex items-center justify-center"
+              className="absolute inset-0 overflow-hidden"
             >
-              {imageError[currentPage] ? (
-                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+              {/* Error state */}
+              {imageError[currentPage] && (
+                <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
                   <div className="text-center">
                     <p className="text-gray-500 mb-2">Unable to load page {currentPage + 1}</p>
                     <button 
-                      onClick={() => {
-                        setImageError(prev => ({ ...prev, [currentPage]: false }));
-                      }}
+                      onClick={() => retryImage(currentPage)}
                       className="text-blue-500 hover:text-blue-700 underline text-sm"
                     >
                       Try again
                     </button>
                   </div>
                 </div>
-              ) : (
-                <div className="relative w-full h-full">
-                  {isSafari ? (
-                    <SafariImage 
-                      src={pages[currentPage]} 
-                      alt={`Brochure page ${currentPage + 1}`}
-                      index={currentPage}
-                    />
-                  ) : (
-                    <StandardImage 
-                      src={pages[currentPage]} 
-                      alt={`Brochure page ${currentPage + 1}`}
-                      index={currentPage}
-                    />
-                  )}
-                </div>
               )}
+
+              {/* Image - Safari optimized */}
+              <div className="relative w-full h-full">
+                <img
+                  src={pages[currentPage]}
+                  alt={`Brochure page ${currentPage + 1}`}
+                  onLoad={() => handleImageLoad(currentPage)}
+                  onError={() => handleImageError(currentPage)}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    objectPosition: 'center',
+                    display: 'block', // Always show the image
+                    backgroundColor: '#ffffff',
+                  }}
+                  loading="eager"
+                  decoding="sync"
+                />
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -149,21 +174,34 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
         </div>
       </div>
 
-      {/* Page dots indicator */}
+      {/* Page dots indicator with loading states */}
       <div className="flex justify-center mt-4 md:mt-6 space-x-1 md:space-x-2 flex-wrap px-4">
         {pages.map((_, index) => (
           <button
             key={index}
             onClick={() => goToPage(index)}
-            className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-200 ${
+            className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-200 relative ${
               index === currentPage
                 ? 'bg-blue-500 scale-125'
-                : 'bg-gray-400 hover:bg-gray-300'
+                : loadedImages[index]
+                ? 'bg-gray-400 hover:bg-gray-300'
+                : 'bg-gray-200 hover:bg-gray-300'
             }`}
             aria-label={`Go to page ${index + 1}`}
-          />
+          >
+            {!loadedImages[index] && !imageError[index] && (
+              <div className="absolute inset-0 rounded-full border border-gray-400 animate-pulse"></div>
+            )}
+          </button>
         ))}
       </div>
+
+      {/* Preload status (development only) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mt-2 text-xs text-gray-500 text-center">
+          Loaded: {Object.keys(loadedImages).length}/{pages.length} images
+        </div>
+      )}
     </div>
   );
 };

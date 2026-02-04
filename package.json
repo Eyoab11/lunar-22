@@ -14,6 +14,7 @@
     "seo:validate:verbose": "tsx lib/seo/validate-seo.ts --verbose",
     "seo:validate:strict": "tsx lib/seo/validate-seo.ts --fail-on-warnings",
     "seo:validate:deployment": "tsx scripts/validate-deployment.ts",
+    "optimize:images": "node scripts/optimize-brochure-images.js",
     "prebuild": "npm run seo:validate:deployment"
   },
   "dependencies": {

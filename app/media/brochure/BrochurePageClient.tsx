@@ -5,7 +5,7 @@ import { BrochureCarousel } from '../../../components/ui/BrochureCarousel';
 import { ImagePreloader } from '../../../components/ui/ImagePreloader';
 
 export function BrochurePageClient() {
-  // Brochure pages - 13 JPG images with correct naming format
+  // Original brochure pages - 13 JPG images with correct naming format
   const brochurePages = [
     '/Lunar 22_Digital Brochure_Feb 02-1_page-0001.jpg',
     '/Lunar 22_Digital Brochure_Feb 02-2_page-0001.jpg',
