@@ -5,21 +5,21 @@ import { BrochureCarousel } from '../../../components/ui/BrochureCarousel';
 import { ImagePreloader } from '../../../components/ui/ImagePreloader';
 
 export function BrochurePageClient() {
-  // Original brochure pages - 13 JPG images with correct naming format
+  // Google Drive images using the same approach as videos with /preview
   const brochurePages = [
-    '/Lunar 22_Digital Brochure_Feb 02-1_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-2_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-3_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-4_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-5_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-6_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-7_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-8_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-9_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-10_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-11_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-12_page-0001.jpg',
-    '/Lunar 22_Digital Brochure_Feb 02-13_page-0001.jpg',
+    'https://drive.google.com/file/d/1sjKhn_fUprC5csPG9MO4h9Qd1kucrVEL/preview',
+    'https://drive.google.com/file/d/1xWY5ptDOYy4KEvm8c3HLQN97dAF-Cht8/preview',
+    'https://drive.google.com/file/d/1Yd36Pit7H6OsZzBPhRi-qpzk4SkwyX--/preview',
+    'https://drive.google.com/file/d/17ruKk95Gks9tZnSofMFwJaOxDxL4mz8c/preview',
+    'https://drive.google.com/file/d/1gDhONVWSTruNWlkgPboXtswlZh68DGzu/preview',
+    'https://drive.google.com/file/d/1RJ0wo6GwHKooOPtk2TZ7V-O66ZKCNVu9/preview',
+    'https://drive.google.com/file/d/1_sCsVRX0Ur0adHFVL-VdyE316GvvVGrw/preview',
+    'https://drive.google.com/file/d/1WXhRDCxmQM-41M2xzoIZvTxgQ-klq7k_/preview',
+    'https://drive.google.com/file/d/14j1k-lhQG5QEi9_5Trq3H6Ht0BJtokjw/preview',
+    'https://drive.google.com/file/d/1b39S0Mwla9h1ja8Xzt_JFhLbmoTyr_72/preview',
+    'https://drive.google.com/file/d/1WkwH8ddhsbXabA8b-YxSctpUlCahlTAc/preview',
+    'https://drive.google.com/file/d/1doCiC7nXSGs-pZmoLTSKfyUfoUXCljHZ/preview',
+    'https://drive.google.com/file/d/1nJ-NVdpilsaG6GM4fUwMIjkyv2XK4kQk/preview',
   ];
 
   return (

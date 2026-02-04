@@ -11,62 +11,31 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({});
   const [imageError, setImageError] = useState<{ [key: number]: boolean }>({});
-  const [isSafari, setIsSafari] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  // Detect Safari browser
+  // Ensure client-side rendering
   useEffect(() => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isSafariBrowser = /safari/.test(userAgent) && !/chrome/.test(userAgent) && !/chromium/.test(userAgent);
-    setIsSafari(isSafariBrowser);
+    setIsClient(true);
   }, []);
 
-  // Preload images aggressively
+  // Preload iframes (simplified approach)
   useEffect(() => {
-    const preloadImages = async () => {
-      // Preload current and next 2 images immediately
-      const imagesToPreload = [
-        currentPage,
-        (currentPage + 1) % pages.length,
-        (currentPage + 2) % pages.length
-      ];
+    if (!isClient) return;
 
-      imagesToPreload.forEach((index) => {
-        if (!loadedImages[index] && !imageError[index]) {
-          const img = new Image();
-          img.onload = () => {
-            setLoadedImages(prev => ({ ...prev, [index]: true }));
-          };
-          img.onerror = (error) => {
-            console.error(`Failed to load image ${index}: ${pages[index]}`, error);
-            setImageError(prev => ({ ...prev, [index]: true }));
-          };
-          img.src = pages[index];
-        }
-      });
-    };
-
-    preloadImages();
-  }, [currentPage, pages, loadedImages, imageError]);
-
-  // Preload all images on component mount (background loading)
-  useEffect(() => {
+    // For iframes, we'll just mark them as loaded when the component mounts
+    // since iframe preloading works differently
     const timer = setTimeout(() => {
-      pages.forEach((src, index) => {
-        if (!loadedImages[index] && !imageError[index]) {
-          const img = new Image();
-          img.onload = () => {
-            setLoadedImages(prev => ({ ...prev, [index]: true }));
-          };
-          img.onerror = () => {
-            setImageError(prev => ({ ...prev, [index]: true }));
-          };
-          img.src = src;
-        }
+      const initialLoaded: { [key: number]: boolean } = {};
+      pages.forEach((_, index) => {
+        initialLoaded[index] = true;
       });
-    }, 500); // Start background loading after 500ms
+      setLoadedImages(initialLoaded);
+    }, 100);
 
     return () => clearTimeout(timer);
-  }, [pages, loadedImages, imageError]);
+  }, [pages, isClient]);
+
+
 
   const nextPage = () => {
     setCurrentPage((prev) => (prev + 1) % pages.length);
@@ -80,26 +49,30 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
     setCurrentPage(pageIndex);
   };
 
+  // Handle iframe load events
   const handleImageLoad = (index: number) => {
+    console.log(`✅ Iframe loaded successfully: ${pages[index]}`);
     setLoadedImages(prev => ({ ...prev, [index]: true }));
   };
 
   const handleImageError = (index: number) => {
-    console.error(`Failed to load image: ${pages[index]}`);
+    console.error(`❌ Failed to load iframe: ${pages[index]}`);
     setImageError(prev => ({ ...prev, [index]: true }));
   };
 
   const retryImage = (index: number) => {
     setImageError(prev => ({ ...prev, [index]: false }));
     setLoadedImages(prev => ({ ...prev, [index]: false }));
+    // For iframes, we'll just reload the page
+    window.location.reload();
   };
 
   return (
     <div className="w-full max-w-full overflow-hidden">
       {/* Main carousel container */}
-      <div className="relative w-full aspect-[4/3] md:aspect-[3/4] lg:aspect-[8.5/11] max-h-[400px] md:max-h-[600px] lg:max-h-[700px] rounded-lg overflow-hidden bg-white shadow-2xl mx-auto">
+      <div className="relative w-full aspect-[4/3] md:aspect-[3/4] lg:aspect-[8.5/11] max-h-[400px] md:max-h-[600px] lg:max-h-[700px] rounded-lg overflow-hidden shadow-2xl mx-auto" style={{ backgroundColor: '#1e1e1e' }}>
         {/* Page display */}
-        <div className="relative w-full h-full overflow-hidden">
+        <div className="relative w-full h-full overflow-hidden" style={{ backgroundColor: '#1e1e1e' }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentPage}
@@ -111,12 +84,12 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
             >
               {/* Error state */}
               {imageError[currentPage] && (
-                <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
+                <div className="absolute inset-0 flex items-center justify-center z-10" style={{ backgroundColor: '#1e1e1e' }}>
                   <div className="text-center">
-                    <p className="text-gray-500 mb-2">Unable to load page {currentPage + 1}</p>
+                    <p className="text-gray-400 mb-2">Unable to load page {currentPage + 1}</p>
                     <button 
                       onClick={() => retryImage(currentPage)}
-                      className="text-blue-500 hover:text-blue-700 underline text-sm"
+                      className="text-blue-400 hover:text-blue-300 underline text-sm"
                     >
                       Try again
                     </button>
@@ -124,24 +97,21 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
                 </div>
               )}
 
-              {/* Image - Safari optimized */}
-              <div className="relative w-full h-full">
-                <img
-                  src={pages[currentPage]}
-                  alt={`Brochure page ${currentPage + 1}`}
-                  onLoad={() => handleImageLoad(currentPage)}
-                  onError={() => handleImageError(currentPage)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    objectPosition: 'center',
-                    display: 'block', // Always show the image
-                    backgroundColor: '#ffffff',
-                  }}
-                  loading="eager"
-                  decoding="sync"
-                />
+              {/* Google Drive iframe - Same approach as videos */}
+              <div className="relative w-full h-full" style={{ backgroundColor: '#1e1e1e' }}>
+                {isClient && (
+                  <iframe
+                    src={pages[currentPage]}
+                    className="w-full h-full rounded-lg"
+                    style={{
+                      border: 'none',
+                      backgroundColor: '#1e1e1e',
+                    }}
+                    onLoad={() => handleImageLoad(currentPage)}
+                    onError={() => handleImageError(currentPage)}
+                    title={`Brochure page ${currentPage + 1}`}
+                  />
+                )}
               </div>
             </motion.div>
           </AnimatePresence>
@@ -195,13 +165,6 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
           </button>
         ))}
       </div>
-
-      {/* Preload status (development only) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mt-2 text-xs text-gray-500 text-center">
-          Loaded: {Object.keys(loadedImages).length}/{pages.length} images
-        </div>
-      )}
     </div>
   );
 };
