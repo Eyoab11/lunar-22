@@ -48,7 +48,7 @@ export function BrochurePageClient() {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 rounded-2xl p-8 backdrop-blur-sm border border-gray-700/50"
+            className="bg-gray-900 bg-opacity-50 rounded-2xl p-8 border border-gray-700 border-opacity-50"
           >
             {/* Interactive Brochure Carousel */}
             <BrochureCarousel pages={brochurePages} />

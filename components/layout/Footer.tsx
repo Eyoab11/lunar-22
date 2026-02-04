@@ -6,9 +6,19 @@ import Link from 'next/link';
 export const Footer = () => {
   const navigationLinks = [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/#about-us' },
+    { name: 'About', href: '/about' },
     { name: 'Projects', href: '/#past-work' },
+    { name: 'Founders', href: '/founders' },
     { name: 'Contact', href: '/contact' },
+  ];
+
+  const mediaLinks = [
+    { name: 'Brochure', href: '/media/brochure' },
+    { name: 'Presentations', href: '/media/presentations' },
+  ];
+
+  const specialLinks = [
+    { name: 'Power Rangers', href: '/power-rangers' },
   ];
 
   const socialLinks = [
@@ -20,7 +30,7 @@ export const Footer = () => {
   return (
     <footer className="bg-black py-16 px-8 border-t border-gray-800">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Left Section - Logo and Tagline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -71,6 +81,28 @@ export const Footer = () => {
             </ul>
           </motion.div>
 
+          {/* Media Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            viewport={{ once: true }}
+          >
+            <h4 className="text-white text-sm font-medium mb-6">Media</h4>
+            <ul className="flex flex-col gap-3">
+              {mediaLinks.map((link) => (
+                <li key={link.name}>
+                  <Link 
+                    href={link.href}
+                    className="text-gray-400 text-sm hover:text-blue-400 transition-colors duration-300"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
           {/* Social Links */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -78,12 +110,14 @@ export const Footer = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <h4 className="text-white text-sm font-medium mb-6">Socials</h4>
+            <h4 className="text-white text-sm font-medium mb-6">Connect</h4>
             <ul className="flex flex-col gap-3">
               {socialLinks.map((link) => (
                 <li key={link.name}>
                   <a 
                     href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-gray-400 text-sm hover:text-blue-400 transition-colors duration-300"
                   >
                     {link.name}

@@ -183,19 +183,41 @@ export function PowerRangersSEO({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function MediaSEO({ children }: { children: React.ReactNode }) {
-  const mediaContent = {
-    title: 'Media | Lunar 22',
-    description: 'Explore our corporate materials, presentations, and video content showcasing our work and vision. Download brochures and watch our latest videos.',
+export function BrochureSEO({ children }: { children: React.ReactNode }) {
+  const brochureContent = {
+    title: 'Corporate Brochure | Lunar 22',
+    description: 'Download our comprehensive corporate brochure showcasing Lunar 22\'s vision, projects, and capabilities in family entertainment and media production.',
     datePublished: '2024-01-01T00:00:00.000Z',
     dateModified: new Date().toISOString(),
   };
 
   return (
     <SEOIntegration
-      page="/media"
+      page="/media/brochure"
       structuredDataType="creativework"
-      customSchema={mediaContent}
+      customSchema={brochureContent}
+      enableAnalytics={true}
+      enableStructuredData={true}
+      enablePerformanceOptimization={true}
+    >
+      {children}
+    </SEOIntegration>
+  );
+}
+
+export function PresentationsSEO({ children }: { children: React.ReactNode }) {
+  const presentationsContent = {
+    title: 'Presentations | Lunar 22',
+    description: 'Access our corporate presentations and pitch decks showcasing Lunar 22\'s strategic vision, project portfolio, and industry expertise.',
+    datePublished: '2024-01-01T00:00:00.000Z',
+    dateModified: new Date().toISOString(),
+  };
+
+  return (
+    <SEOIntegration
+      page="/media/presentations"
+      structuredDataType="creativework"
+      customSchema={presentationsContent}
       enableAnalytics={true}
       enableStructuredData={true}
       enablePerformanceOptimization={true}

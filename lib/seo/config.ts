@@ -199,21 +199,21 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
       priority: 0.7,
     },
   },
-  '/media': {
+  '/media/brochure': {
     metadata: {
-      title: 'MEDIA | Lunar 22',
-      description: 'Explore our corporate materials, presentations, and video content showcasing our work and vision. Download brochures and watch our latest videos.',
+      title: 'Corporate Brochure | Lunar 22',
+      description: 'Download our comprehensive corporate brochure showcasing Lunar 22\'s vision, projects, and capabilities in family entertainment and media production.',
       openGraph: {
-        title: 'MEDIA | Lunar 22',
-        description: 'Explore our corporate materials, presentations, and video content showcasing our work and vision. Download brochures and watch our latest videos.',
+        title: 'Corporate Brochure | Lunar 22',
+        description: 'Download our comprehensive corporate brochure showcasing Lunar 22\'s vision, projects, and capabilities in family entertainment and media production.',
         image: '/lem.avif',
         type: 'website',
         siteName: 'Lunar 22',
       },
       twitter: {
         card: 'summary_large_image',
-        title: 'MEDIA | Lunar 22',
-        description: 'Explore our corporate materials, presentations, and video content showcasing our work and vision. Download brochures and watch our latest videos.',
+        title: 'Corporate Brochure | Lunar 22',
+        description: 'Download our comprehensive corporate brochure showcasing Lunar 22\'s vision, projects, and capabilities in family entertainment and media production.',
         image: '/lem.avif',
         site: '@lunar22media',
       },
@@ -223,12 +223,54 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
       },
     },
     schema: {
-      type: 'webpage',
-      data: {},
+      type: 'creativework',
+      data: {
+        name: 'Lunar 22 Corporate Brochure',
+        description: 'Comprehensive corporate brochure showcasing our vision and capabilities',
+        creator: 'Lunar 22',
+        datePublished: '2024-01-01',
+      },
     },
     sitemap: {
       changefreq: 'monthly',
-      priority: 0.8,
+      priority: 0.7,
+    },
+  },
+  '/media/presentations': {
+    metadata: {
+      title: 'Presentations | Lunar 22',
+      description: 'Access our corporate presentations and pitch decks showcasing Lunar 22\'s strategic vision, project portfolio, and industry expertise.',
+      openGraph: {
+        title: 'Presentations | Lunar 22',
+        description: 'Access our corporate presentations and pitch decks showcasing Lunar 22\'s strategic vision, project portfolio, and industry expertise.',
+        image: '/lem.avif',
+        type: 'website',
+        siteName: 'Lunar 22',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Presentations | Lunar 22',
+        description: 'Access our corporate presentations and pitch decks showcasing Lunar 22\'s strategic vision, project portfolio, and industry expertise.',
+        image: '/lem.avif',
+        site: '@lunar22media',
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+    },
+    schema: {
+      type: 'creativework',
+      data: {
+        name: 'Lunar 22 Corporate Presentations',
+        description: 'Corporate presentations and pitch decks showcasing our strategic vision',
+        creator: 'Lunar 22',
+        datePublished: '2024-01-01',
+      },
+    },
+    sitemap: {
+      changefreq: 'monthly',
+      priority: 0.7,
     },
   },
 };
