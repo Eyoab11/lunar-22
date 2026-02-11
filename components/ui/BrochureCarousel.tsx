@@ -27,37 +27,41 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
     setIsSafariDesktop(isSafari && isMac && !isIOS);
   }, []);
 
-  // Convert Google Drive preview URLs to thumbnail URLs for all browsers
+  // Convert Google Drive preview URLs to proxied image URLs for Safari desktop
   const getImageUrl = (previewUrl: string) => {
-    // Extract file ID and use Google Drive's thumbnail API
-    // Using sz=h2000 for height-based sizing to get full page
+    if (!isSafariDesktop) return previewUrl;
+    
+    // Extract file ID and use our proxy API
     const match = previewUrl.match(/\/d\/([^/]+)\//);
     if (match) {
       const fileId = match[1];
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=h2000`;
+      return `/api/proxy-image?id=${fileId}`;
     }
     return previewUrl;
   };
 
-  // Aggressive preloading: preload current + 2 adjacent pages on each side
+  // Preload adjacent pages
   useEffect(() => {
-    if (!isClient || !isSafariDesktop) return;
+    if (!isClient) return;
 
-    const pagesToPreload = [
-      currentPage,
+    const adjacentPages = [
       (currentPage - 1 + pages.length) % pages.length,
       (currentPage + 1) % pages.length,
-      (currentPage - 2 + pages.length) % pages.length,
-      (currentPage + 2) % pages.length,
     ];
 
-    pagesToPreload.forEach((index) => {
+    adjacentPages.forEach((index) => {
       if (loadedImages[index] || imageError[index]) return;
 
       const link = document.createElement('link');
       link.rel = 'prefetch';
-      link.as = 'image';
-      link.href = getImageUrl(pages[index]);
+      
+      if (isSafariDesktop) {
+        link.as = 'image';
+        link.href = getImageUrl(pages[index]);
+      } else {
+        link.href = pages[index];
+      }
+      
       document.head.appendChild(link);
     });
   }, [currentPage, isClient, isSafariDesktop, pages, loadedImages, imageError]);
@@ -130,20 +134,19 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
                 </div>
               )}
 
-              {/* Google Drive content - iframe for most browsers, img for Safari desktop */}
+              {/* Google Drive content - iframe for most browsers, direct image for Safari */}
               <div className="relative w-full h-full" style={{ backgroundColor: '#1e1e1e' }}>
                 {isClient && (
                   <>
                     {isSafariDesktop ? (
-                      /* Safari desktop: Use thumbnail API with regular img tag */
-                      <div className="relative w-full h-full flex items-center justify-center bg-white overflow-auto">
+                      /* Safari desktop: Use proxied direct image */
+                      <div className="relative w-full h-full flex items-center justify-center bg-white">
                         <img
                           src={getImageUrl(pages[currentPage])}
                           alt={`Brochure page ${currentPage + 1}`}
                           className="max-w-full max-h-full object-contain"
                           onLoad={() => handleImageLoad(currentPage)}
                           onError={() => handleImageError(currentPage)}
-                          style={{ width: 'auto', height: 'auto' }}
                         />
                       </div>
                     ) : (
@@ -153,12 +156,13 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
                         className="w-full h-full rounded-lg"
                         style={{
                           border: 'none',
-                          backgroundColor: '#1e1e1e',
+                          backgroundColor: '#ffffff',
                         }}
                         onLoad={() => handleImageLoad(currentPage)}
                         onError={() => handleImageError(currentPage)}
                         title={`Brochure page ${currentPage + 1}`}
                         allow="autoplay"
+                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
                       />
                     )}
                   </>
