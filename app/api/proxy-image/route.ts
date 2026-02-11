@@ -9,10 +9,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Use Google Drive's direct download URL with confirm=t to bypass virus scan
-    // This is the recommended approach for programmatic downloads
-    const driveUrl = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=t`;
-    
+    // Use Google Drive's thumbnail API for reliable image fetching
+    // The sz=w1600 parameter requests high-resolution output
+    const driveUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+
     const response = await fetch(driveUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',

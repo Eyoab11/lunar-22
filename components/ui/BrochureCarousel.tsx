@@ -27,15 +27,15 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
     setIsSafariDesktop(isSafari && isMac && !isIOS);
   }, []);
 
-  // Convert Google Drive preview URLs to proxied image URLs for Safari desktop
+  // Convert Google Drive preview URLs to direct thumbnail URLs for Safari desktop
   const getImageUrl = (previewUrl: string) => {
     if (!isSafariDesktop) return previewUrl;
     
-    // Extract file ID and use our proxy API
+    // Extract file ID and use Google Drive's thumbnail API for direct image access
     const match = previewUrl.match(/\/d\/([^/]+)\//);
     if (match) {
       const fileId = match[1];
-      return `/api/proxy-image?id=${fileId}`;
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
     }
     return previewUrl;
   };
