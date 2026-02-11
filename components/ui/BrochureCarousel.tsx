@@ -100,49 +100,36 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
     return previewUrl;
   };
 
-  // Optimized preloading with caching: only load current page and adjacent pages
+  // Optimized preloading with caching: preload adjacent pages
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || !isSafariDesktop) return;
 
-    if (isSafariDesktop) {
-      // For Safari desktop, lazy load only adjacent pages
-      const pagesToLoad = [
-        currentPage,
-        (currentPage - 1 + pages.length) % pages.length,
-        (currentPage + 1) % pages.length,
-      ];
+    // Preload adjacent pages in the background
+    const adjacentPages = [
+      (currentPage - 1 + pages.length) % pages.length,
+      (currentPage + 1) % pages.length,
+    ];
 
-      pagesToLoad.forEach((index) => {
-        // Skip if already loaded or has error
-        if (loadedImages[index] || imageError[index]) return;
+    adjacentPages.forEach((index) => {
+      // Skip if already loaded or has error
+      if (loadedImages[index] || imageError[index]) return;
 
-        // Check if we have a cached version
-        if (cachedUrls[index]) {
-          setLoadedImages(prev => ({ ...prev, [index]: true }));
-          return;
-        }
-
-        const imageUrl = getImageUrl(pages[index]);
-        const img = document.createElement('img');
-        
-        img.onload = () => {
-          setLoadedImages(prev => ({ ...prev, [index]: true }));
-          saveToCache(index, imageUrl);
-          console.log(`✅ Loaded and cached page ${index + 1}`);
-        };
-        
-        img.onerror = () => {
-          setImageError(prev => ({ ...prev, [index]: true }));
-          console.error(`❌ Failed to load page ${index + 1}`);
-        };
-        
-        img.src = imageUrl;
-      });
-    } else {
-      // For other browsers using iframes, mark current page as loaded immediately
-      setLoadedImages(prev => ({ ...prev, [currentPage]: true }));
-    }
-  }, [pages, isClient, isSafariDesktop, currentPage, loadedImages, imageError, cachedUrls, saveToCache]);
+      const imageUrl = getImageUrl(pages[index]);
+      const img = new window.Image();
+      
+      img.onload = () => {
+        setLoadedImages(prev => ({ ...prev, [index]: true }));
+        saveToCache(index, imageUrl);
+        console.log(`✅ Preloaded page ${index + 1}`);
+      };
+      
+      img.onerror = () => {
+        console.error(`❌ Failed to preload page ${index + 1}`);
+      };
+      
+      img.src = imageUrl;
+    });
+  }, [pages, isClient, isSafariDesktop, currentPage, loadedImages, imageError, saveToCache]);
 
 
 
@@ -234,20 +221,21 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
                 {isClient && (
                   <>
                     {isSafariDesktop ? (
-                      /* Safari desktop: Use direct image URLs with lazy loading */
+                      /* Safari desktop: Use direct image URLs */
                       <div className="relative w-full h-full flex items-center justify-center">
-                        {loadedImages[currentPage] && (
-                          <Image
-                            src={getImageUrl(pages[currentPage])}
-                            alt={`Brochure page ${currentPage + 1}`}
-                            fill
-                            className="object-contain"
-                            onError={() => handleImageError(currentPage)}
-                            priority={currentPage === 0}
-                            unoptimized
-                            loading={currentPage === 0 ? 'eager' : 'lazy'}
-                          />
-                        )}
+                        <Image
+                          src={getImageUrl(pages[currentPage])}
+                          alt={`Brochure page ${currentPage + 1}`}
+                          fill
+                          className="object-contain"
+                          onLoad={() => {
+                            handleImageLoad(currentPage);
+                            saveToCache(currentPage, getImageUrl(pages[currentPage]));
+                          }}
+                          onError={() => handleImageError(currentPage)}
+                          priority={currentPage === 0}
+                          unoptimized
+                        />
                       </div>
                     ) : (
                       /* Other browsers: Use iframe with lazy loading */
