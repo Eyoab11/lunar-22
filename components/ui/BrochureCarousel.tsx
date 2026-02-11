@@ -12,61 +12,6 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({});
   const [imageError, setImageError] = useState<{ [key: number]: boolean }>({});
-  const [isClient, setIsClient] = useState(false);
-  const [isSafariDesktop, setIsSafariDesktop] = useState(false);
-
-  // Detect Safari desktop (not iOS)
-  useEffect(() => {
-    setIsClient(true);
-    
-    const ua = navigator.userAgent;
-    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
-    const isIOS = /iPad|iPhone|iPod/.test(ua);
-    const isMac = /Macintosh/.test(ua);
-    
-    setIsSafariDesktop(isSafari && isMac && !isIOS);
-  }, []);
-
-  // Convert Google Drive preview URLs to direct thumbnail URLs for Safari desktop
-  const getImageUrl = (previewUrl: string) => {
-    if (!isSafariDesktop) return previewUrl;
-    
-    // Extract file ID and use Google Drive's thumbnail API for direct image access
-    const match = previewUrl.match(/\/d\/([^/]+)\//);
-    if (match) {
-      const fileId = match[1];
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
-    }
-    return previewUrl;
-  };
-
-  // Preload adjacent pages
-  useEffect(() => {
-    if (!isClient) return;
-
-    const adjacentPages = [
-      (currentPage - 1 + pages.length) % pages.length,
-      (currentPage + 1) % pages.length,
-    ];
-
-    adjacentPages.forEach((index) => {
-      if (loadedImages[index] || imageError[index]) return;
-
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      
-      if (isSafariDesktop) {
-        link.as = 'image';
-        link.href = getImageUrl(pages[index]);
-      } else {
-        link.href = pages[index];
-      }
-      
-      document.head.appendChild(link);
-    });
-  }, [currentPage, isClient, isSafariDesktop, pages, loadedImages, imageError]);
-
-
 
   const nextPage = () => {
     setCurrentPage((prev) => (prev + 1) % pages.length);
@@ -94,6 +39,19 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
     setLoadedImages(prev => ({ ...prev, [index]: false }));
   };
 
+  // Preload adjacent images using standard browser prefetching
+  useEffect(() => {
+    const adjacentPages = [
+      (currentPage - 1 + pages.length) % pages.length,
+      (currentPage + 1) % pages.length,
+    ];
+
+    adjacentPages.forEach((index) => {
+      const img = new window.Image();
+      img.src = pages[index];
+    });
+  }, [currentPage, pages]);
+
   return (
     <div className="w-full max-w-full overflow-hidden">
       {/* Main carousel container - adjusted aspect ratio for document pages */}
@@ -107,11 +65,11 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -300 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="absolute inset-0 overflow-hidden"
+              className="absolute inset-0 overflow-hidden bg-white flex items-center justify-center"
             >
               {/* Loading skeleton */}
               {!loadedImages[currentPage] && !imageError[currentPage] && (
-                <div className="absolute inset-0 flex items-center justify-center z-5" style={{ backgroundColor: '#1e1e1e' }}>
+                <div className="absolute inset-0 flex items-center justify-center z-10" style={{ backgroundColor: '#1e1e1e' }}>
                   <div className="text-center">
                     <div className="inline-block w-12 h-12 border-4 border-gray-600 border-t-blue-500 rounded-full animate-spin mb-3"></div>
                     <p className="text-gray-400 text-sm">Loading page {currentPage + 1}...</p>
@@ -124,7 +82,7 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
                 <div className="absolute inset-0 flex items-center justify-center z-10" style={{ backgroundColor: '#1e1e1e' }}>
                   <div className="text-center">
                     <p className="text-gray-400 mb-2">Unable to load page {currentPage + 1}</p>
-                    <button 
+                    <button
                       onClick={() => retryImage(currentPage)}
                       className="text-blue-400 hover:text-blue-300 underline text-sm"
                     >
@@ -134,39 +92,19 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
                 </div>
               )}
 
-              {/* Google Drive content - iframe for most browsers, direct image for Safari */}
-              <div className="relative w-full h-full" style={{ backgroundColor: '#1e1e1e' }}>
-                {isClient && (
-                  <>
-                    {isSafariDesktop ? (
-                      /* Safari desktop: Use proxied direct image */
-                      <div className="relative w-full h-full flex items-center justify-center bg-white">
-                        <img
-                          src={getImageUrl(pages[currentPage])}
-                          alt={`Brochure page ${currentPage + 1}`}
-                          className="max-w-full max-h-full object-contain"
-                          onLoad={() => handleImageLoad(currentPage)}
-                          onError={() => handleImageError(currentPage)}
-                        />
-                      </div>
-                    ) : (
-                      /* Other browsers: Use iframe */
-                      <iframe
-                        src={pages[currentPage]}
-                        className="w-full h-full rounded-lg"
-                        style={{
-                          border: 'none',
-                          backgroundColor: '#ffffff',
-                        }}
-                        onLoad={() => handleImageLoad(currentPage)}
-                        onError={() => handleImageError(currentPage)}
-                        title={`Brochure page ${currentPage + 1}`}
-                        allow="autoplay"
-                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                      />
-                    )}
-                  </>
-                )}
+              {/* Local Image with next/image optimization */}
+              <div className="relative w-full h-full">
+                <Image
+                  src={pages[currentPage]}
+                  alt={`Brochure page ${currentPage + 1}`}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                  priority={true}
+                  onLoad={() => handleImageLoad(currentPage)}
+                  onError={() => handleImageError(currentPage)}
+                  quality={90}
+                />
               </div>
             </motion.div>
           </AnimatePresence>
@@ -175,7 +113,7 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
         {/* Navigation arrows */}
         <button
           onClick={prevPage}
-          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 z-20"
           aria-label="Previous page"
         >
           <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -185,7 +123,7 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
 
         <button
           onClick={nextPage}
-          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 z-20"
           aria-label="Next page"
         >
           <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,7 +132,7 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
         </button>
 
         {/* Page counter */}
-        <div className="absolute top-2 md:top-4 right-2 md:right-4 bg-black bg-opacity-50 text-white px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium z-10">
+        <div className="absolute top-2 md:top-4 right-2 md:right-4 bg-black bg-opacity-50 text-white px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium z-20">
           {currentPage + 1} / {pages.length}
         </div>
       </div>
@@ -205,19 +143,12 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
           <button
             key={index}
             onClick={() => goToPage(index)}
-            className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-200 relative ${
-              index === currentPage
+            className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-200 relative ${index === currentPage
                 ? 'bg-blue-500 scale-125'
-                : loadedImages[index]
-                ? 'bg-gray-400 hover:bg-gray-300'
                 : 'bg-gray-200 hover:bg-gray-300'
-            }`}
+              }`}
             aria-label={`Go to page ${index + 1}`}
-          >
-            {!loadedImages[index] && !imageError[index] && (
-              <div className="absolute inset-0 rounded-full border border-gray-400 animate-pulse"></div>
-            )}
-          </button>
+          />
         ))}
       </div>
     </div>
