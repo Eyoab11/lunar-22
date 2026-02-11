@@ -2,9 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { BrochureCarousel } from '../../../components/ui/BrochureCarousel';
-import { ImagePreloader } from '../../../components/ui/ImagePreloader';
+import { useServiceWorker } from '../../../lib/useServiceWorker';
 
 export function BrochurePageClient() {
+  // Register service worker for caching
+  useServiceWorker();
+
   // Google Drive images using the same approach as videos with /preview
   const brochurePages = [
     'https://drive.google.com/file/d/1sjKhn_fUprC5csPG9MO4h9Qd1kucrVEL/preview',
@@ -24,9 +27,6 @@ export function BrochurePageClient() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Preload brochure images for better performance */}
-      <ImagePreloader images={brochurePages} priority={3} />
-      
       {/* Hero Section */}
       <section className="relative pt-32 pb-8 px-6">
         <div className="max-w-7xl mx-auto text-center">

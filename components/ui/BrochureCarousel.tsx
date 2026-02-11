@@ -1,39 +1,148 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 interface BrochureCarouselProps {
   pages: string[];
 }
+
+// Cache key for localStorage
+const CACHE_KEY = 'brochure_cache_v1';
+const CACHE_TIMESTAMP_KEY = 'brochure_cache_timestamp';
+const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({});
   const [imageError, setImageError] = useState<{ [key: number]: boolean }>({});
   const [isClient, setIsClient] = useState(false);
+  const [isSafariDesktop, setIsSafariDesktop] = useState(false);
+  const [cachedUrls, setCachedUrls] = useState<{ [key: number]: string }>({});
 
-  // Ensure client-side rendering
+  // Detect Safari desktop (not iOS)
   useEffect(() => {
     setIsClient(true);
+    
+    const ua = navigator.userAgent;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isMac = /Macintosh/.test(ua);
+    
+    // Safari on macOS desktop has issues with Google Drive iframes
+    setIsSafariDesktop(isSafari && isMac && !isIOS);
+    
+    // Load cached data
+    loadFromCache();
   }, []);
 
-  // Preload iframes (simplified approach)
+  // Load cached images from localStorage
+  const loadFromCache = useCallback(() => {
+    try {
+      const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+      const now = Date.now();
+      
+      // Check if cache is still valid
+      if (timestamp && (now - parseInt(timestamp)) < CACHE_DURATION) {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const parsedCache = JSON.parse(cached);
+          setCachedUrls(parsedCache);
+          
+          // Mark cached images as loaded
+          const loaded: { [key: number]: boolean } = {};
+          Object.keys(parsedCache).forEach(key => {
+            loaded[parseInt(key)] = true;
+          });
+          setLoadedImages(loaded);
+          
+          console.log('✅ Loaded brochure pages from cache');
+          return true;
+        }
+      } else {
+        // Clear expired cache
+        localStorage.removeItem(CACHE_KEY);
+        localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+      }
+    } catch (error) {
+      console.error('Failed to load from cache:', error);
+    }
+    return false;
+  }, []);
+
+  // Save to cache
+  const saveToCache = useCallback((index: number, url: string) => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      const cacheData = cached ? JSON.parse(cached) : {};
+      cacheData[index] = url;
+      
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+      
+      setCachedUrls(prev => ({ ...prev, [index]: url }));
+    } catch (error) {
+      console.error('Failed to save to cache:', error);
+    }
+  }, []);
+
+  // Convert Google Drive preview URLs to direct image URLs for Safari desktop
+  const getImageUrl = (previewUrl: string) => {
+    if (!isSafariDesktop) return previewUrl;
+    
+    // Extract file ID from preview URL and convert to direct image URL
+    const match = previewUrl.match(/\/d\/([^/]+)\//);
+    if (match) {
+      const fileId = match[1];
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+    return previewUrl;
+  };
+
+  // Optimized preloading with caching: only load current page and adjacent pages
   useEffect(() => {
     if (!isClient) return;
 
-    // For iframes, we'll just mark them as loaded when the component mounts
-    // since iframe preloading works differently
-    const timer = setTimeout(() => {
-      const initialLoaded: { [key: number]: boolean } = {};
-      pages.forEach((_, index) => {
-        initialLoaded[index] = true;
-      });
-      setLoadedImages(initialLoaded);
-    }, 100);
+    if (isSafariDesktop) {
+      // For Safari desktop, lazy load only adjacent pages
+      const pagesToLoad = [
+        currentPage,
+        (currentPage - 1 + pages.length) % pages.length,
+        (currentPage + 1) % pages.length,
+      ];
 
-    return () => clearTimeout(timer);
-  }, [pages, isClient]);
+      pagesToLoad.forEach((index) => {
+        // Skip if already loaded or has error
+        if (loadedImages[index] || imageError[index]) return;
+
+        // Check if we have a cached version
+        if (cachedUrls[index]) {
+          setLoadedImages(prev => ({ ...prev, [index]: true }));
+          return;
+        }
+
+        const imageUrl = getImageUrl(pages[index]);
+        const img = document.createElement('img');
+        
+        img.onload = () => {
+          setLoadedImages(prev => ({ ...prev, [index]: true }));
+          saveToCache(index, imageUrl);
+          console.log(`✅ Loaded and cached page ${index + 1}`);
+        };
+        
+        img.onerror = () => {
+          setImageError(prev => ({ ...prev, [index]: true }));
+          console.error(`❌ Failed to load page ${index + 1}`);
+        };
+        
+        img.src = imageUrl;
+      });
+    } else {
+      // For other browsers using iframes, mark current page as loaded immediately
+      setLoadedImages(prev => ({ ...prev, [currentPage]: true }));
+    }
+  }, [pages, isClient, isSafariDesktop, currentPage, loadedImages, imageError, cachedUrls, saveToCache]);
 
 
 
@@ -63,8 +172,21 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
   const retryImage = (index: number) => {
     setImageError(prev => ({ ...prev, [index]: false }));
     setLoadedImages(prev => ({ ...prev, [index]: false }));
-    // For iframes, we'll just reload the page
-    window.location.reload();
+    
+    if (isSafariDesktop) {
+      // For Safari desktop, retry loading the image
+      const img = document.createElement('img');
+      img.onload = () => {
+        setLoadedImages(prev => ({ ...prev, [index]: true }));
+      };
+      img.onerror = () => {
+        setImageError(prev => ({ ...prev, [index]: true }));
+      };
+      img.src = getImageUrl(pages[index]);
+    } else {
+      // For iframes, reload the page
+      window.location.reload();
+    }
   };
 
   return (
@@ -82,6 +204,16 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="absolute inset-0 overflow-hidden"
             >
+              {/* Loading skeleton */}
+              {!loadedImages[currentPage] && !imageError[currentPage] && (
+                <div className="absolute inset-0 flex items-center justify-center z-5" style={{ backgroundColor: '#1e1e1e' }}>
+                  <div className="text-center">
+                    <div className="inline-block w-12 h-12 border-4 border-gray-600 border-t-blue-500 rounded-full animate-spin mb-3"></div>
+                    <p className="text-gray-400 text-sm">Loading page {currentPage + 1}...</p>
+                  </div>
+                </div>
+              )}
+
               {/* Error state */}
               {imageError[currentPage] && (
                 <div className="absolute inset-0 flex items-center justify-center z-10" style={{ backgroundColor: '#1e1e1e' }}>
@@ -97,20 +229,43 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
                 </div>
               )}
 
-              {/* Google Drive iframe - Same approach as videos */}
+              {/* Google Drive content - iframe for most browsers, img for Safari desktop */}
               <div className="relative w-full h-full" style={{ backgroundColor: '#1e1e1e' }}>
                 {isClient && (
-                  <iframe
-                    src={pages[currentPage]}
-                    className="w-full h-full rounded-lg"
-                    style={{
-                      border: 'none',
-                      backgroundColor: '#1e1e1e',
-                    }}
-                    onLoad={() => handleImageLoad(currentPage)}
-                    onError={() => handleImageError(currentPage)}
-                    title={`Brochure page ${currentPage + 1}`}
-                  />
+                  <>
+                    {isSafariDesktop ? (
+                      /* Safari desktop: Use direct image URLs with lazy loading */
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        {loadedImages[currentPage] && (
+                          <Image
+                            src={getImageUrl(pages[currentPage])}
+                            alt={`Brochure page ${currentPage + 1}`}
+                            fill
+                            className="object-contain"
+                            onError={() => handleImageError(currentPage)}
+                            priority={currentPage === 0}
+                            unoptimized
+                            loading={currentPage === 0 ? 'eager' : 'lazy'}
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      /* Other browsers: Use iframe with lazy loading */
+                      <iframe
+                        src={pages[currentPage]}
+                        className="w-full h-full rounded-lg"
+                        style={{
+                          border: 'none',
+                          backgroundColor: '#1e1e1e',
+                        }}
+                        onLoad={() => handleImageLoad(currentPage)}
+                        onError={() => handleImageError(currentPage)}
+                        title={`Brochure page ${currentPage + 1}`}
+                        allow="autoplay"
+                        loading="lazy"
+                      />
+                    )}
+                  </>
                 )}
               </div>
             </motion.div>
@@ -138,9 +293,12 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
           </svg>
         </button>
 
-        {/* Page counter */}
-        <div className="absolute top-2 md:top-4 right-2 md:right-4 bg-black bg-opacity-50 text-white px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium z-10">
-          {currentPage + 1} / {pages.length}
+        {/* Page counter with cache indicator */}
+        <div className="absolute top-2 md:top-4 right-2 md:right-4 bg-black bg-opacity-50 text-white px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium z-10 flex items-center gap-2">
+          <span>{currentPage + 1} / {pages.length}</span>
+          {cachedUrls[currentPage] && (
+            <span className="text-green-400" title="Loaded from cache">⚡</span>
+          )}
         </div>
       </div>
 
