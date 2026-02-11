@@ -2,12 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { BrochureCarousel } from '../../../components/ui/BrochureCarousel';
-import { useServiceWorker } from '../../../lib/useServiceWorker';
 
 export function BrochurePageClient() {
-  // Register service worker for caching
-  useServiceWorker();
-
   // Google Drive images using the same approach as videos with /preview
   const brochurePages = [
     'https://drive.google.com/file/d/1sjKhn_fUprC5csPG9MO4h9Qd1kucrVEL/preview',
