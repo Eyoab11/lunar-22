@@ -27,15 +27,14 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
     setIsSafariDesktop(isSafari && isMac && !isIOS);
   }, []);
 
-  // Convert Google Drive preview URLs to thumbnail URLs for Safari desktop
+  // Convert Google Drive preview URLs to thumbnail URLs for all browsers
   const getImageUrl = (previewUrl: string) => {
-    if (!isSafariDesktop) return previewUrl;
-    
     // Extract file ID and use Google Drive's thumbnail API
+    // Using sz=h2000 for height-based sizing to get full page
     const match = previewUrl.match(/\/d\/([^/]+)\//);
     if (match) {
       const fileId = match[1];
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`;
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=h2000`;
     }
     return previewUrl;
   };
@@ -93,8 +92,8 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
 
   return (
     <div className="w-full max-w-full overflow-hidden">
-      {/* Main carousel container */}
-      <div className="relative w-full aspect-[4/3] md:aspect-[3/4] lg:aspect-[8.5/11] max-h-[400px] md:max-h-[600px] lg:max-h-[700px] rounded-lg overflow-hidden shadow-2xl mx-auto" style={{ backgroundColor: '#1e1e1e' }}>
+      {/* Main carousel container - adjusted aspect ratio for document pages */}
+      <div className="relative w-full aspect-[8.5/11] max-h-[800px] rounded-lg overflow-hidden shadow-2xl mx-auto" style={{ backgroundColor: '#1e1e1e' }}>
         {/* Page display */}
         <div className="relative w-full h-full overflow-hidden" style={{ backgroundColor: '#1e1e1e' }}>
           <AnimatePresence mode="wait">
@@ -136,18 +135,15 @@ export const BrochureCarousel = ({ pages }: BrochureCarouselProps) => {
                 {isClient && (
                   <>
                     {isSafariDesktop ? (
-                      /* Safari desktop: Use thumbnail API with Next.js Image optimization */
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <Image
+                      /* Safari desktop: Use thumbnail API with regular img tag */
+                      <div className="relative w-full h-full flex items-center justify-center bg-white overflow-auto">
+                        <img
                           src={getImageUrl(pages[currentPage])}
                           alt={`Brochure page ${currentPage + 1}`}
-                          fill
-                          className="object-contain"
+                          className="max-w-full max-h-full object-contain"
                           onLoad={() => handleImageLoad(currentPage)}
                           onError={() => handleImageError(currentPage)}
-                          priority={currentPage === 0}
-                          quality={95}
-                          unoptimized
+                          style={{ width: 'auto', height: 'auto' }}
                         />
                       </div>
                     ) : (
