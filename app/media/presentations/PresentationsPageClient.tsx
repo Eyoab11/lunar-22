@@ -12,14 +12,16 @@ export function PresentationsPageClient() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-8 px-6">
         <div className="max-w-7xl mx-auto text-center">
-          <motion.h1
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-4xl md:text-5xl font-bold mb-8 text-white"
+            transition={{ duration: 1 }}
           >
-            PRESENTATIONS
-          </motion.h1>
+            <div className="w-20 h-0.5 bg-gradient-to-r from-blue-500 via-white to-blue-500 mx-auto mb-6" />
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+              PRESENTATIONS
+            </h1>
+          </motion.div>
         </div>
       </section>
 
