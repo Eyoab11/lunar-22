@@ -201,10 +201,10 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
   },
   '/media/brochure': {
     metadata: {
-      title: 'Corporate Brochure | Lunar 22',
+      title: 'BROCHURE | Lunar 22',
       description: 'Download our comprehensive corporate brochure showcasing Lunar 22\'s vision, projects, and capabilities in family entertainment and media production.',
       openGraph: {
-        title: 'Corporate Brochure | Lunar 22',
+        title: 'BROCHURE | Lunar 22',
         description: 'Download our comprehensive corporate brochure showcasing Lunar 22\'s vision, projects, and capabilities in family entertainment and media production.',
         image: '/lem.avif',
         type: 'website',
@@ -212,7 +212,7 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
       },
       twitter: {
         card: 'summary_large_image',
-        title: 'Corporate Brochure | Lunar 22',
+        title: 'BROCHURE | Lunar 22',
         description: 'Download our comprehensive corporate brochure showcasing Lunar 22\'s vision, projects, and capabilities in family entertainment and media production.',
         image: '/lem.avif',
         site: '@lunar22media',
@@ -238,10 +238,10 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
   },
   '/media/presentations': {
     metadata: {
-      title: 'Presentations | Lunar 22',
+      title: 'PRESENTATIONS | Lunar 22',
       description: 'Access our corporate presentations and pitch decks showcasing Lunar 22\'s strategic vision, project portfolio, and industry expertise.',
       openGraph: {
-        title: 'Presentations | Lunar 22',
+        title: 'PRESENTATIONS | Lunar 22',
         description: 'Access our corporate presentations and pitch decks showcasing Lunar 22\'s strategic vision, project portfolio, and industry expertise.',
         image: '/lem.avif',
         type: 'website',
@@ -249,7 +249,7 @@ export const pageConfigs: Record<string, PageSEOConfig> = {
       },
       twitter: {
         card: 'summary_large_image',
-        title: 'Presentations | Lunar 22',
+        title: 'PRESENTATIONS | Lunar 22',
         description: 'Access our corporate presentations and pitch decks showcasing Lunar 22\'s strategic vision, project portfolio, and industry expertise.',
         image: '/lem.avif',
         site: '@lunar22media',
